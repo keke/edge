@@ -3,6 +3,12 @@ apply plugin: 'java'
 sourceCompatibility = 9
 version = '0.0.1-SNAPSHOT'
 
-dependencies{
+dependencies {
     compile "io.vertx:vertx-web:$vertxVersion"
+    compile "org.slf4j:slf4j-api:$slf4jVersion"
+    compile "commons-io:commons-io:$commonsIoVersion"
+
+    //runtime dependencies
+    runtime "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
+
 }
