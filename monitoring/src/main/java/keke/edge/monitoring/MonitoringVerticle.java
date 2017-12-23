@@ -1,4 +1,6 @@
 package keke.edge.monitoring;
 
-public class MonitoringVerticle {
+import io.vertx.core.AbstractVerticle;
+
+public class MonitoringVerticle extends AbstractVerticle {
 }
