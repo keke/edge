@@ -40,3 +40,6 @@ jobs:
 
       # run tests!
       - run: gradle test
+
+      # run scan
+      - run: gradle sonarqub -Dsonar.organization=${sonarOrg}   -Dsonar.login=${sonarLogin}
