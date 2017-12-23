@@ -27,7 +27,7 @@ public class VertxMain {
         options = new VertxOptions();
         if (configFile != null) {
             String configStr = getConfig(configFile);
-            if (configFile != null) {
+            if (configStr != null) {
                 options = new VertxOptions(new JsonObject(configStr));
             }
         } else {
@@ -48,7 +48,7 @@ public class VertxMain {
     }
 
     private void start() {
-        vertx = Vertx.vertx();
+        vertx = Vertx.vertx(options);
 //        vertx.
     }
 
