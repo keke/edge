@@ -4,5 +4,5 @@ sourceCompatibility = 9
 version = '0.0.1-SNAPSHOT'
 
 dependencies{
-    compile "io.vertx:vertx-web:$vertx.version"
+    compile "io.vertx:vertx-web:$vertxVersion"
 }
