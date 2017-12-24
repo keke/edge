@@ -7,12 +7,17 @@ buildscript {
     }
 }
 apply plugin: 'java'
+apply plugin: "jacoco"
 apply plugin: 'org.junit.platform.gradle.plugin'
 
 sourceCompatibility = 9
 targetCompatibility = 9
 version = '0.0.1-SNAPSHOT'
 
+jacoco {
+    toolVersion = "0.7.9"
+    applyTo junitPlatformTest
+}
 dependencies {
     compile "io.vertx:vertx-web:$vertxVersion"
     compile "org.slf4j:slf4j-api:$slf4jVersion"
@@ -28,3 +33,20 @@ dependencies {
     runtime "org.apache.tika:tika-parsers:$tikaVersion"
 
 }
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination file("${buildDir}/jacocoHtml")
+    }
+}
+
+
+junitPlatformTest {
+    jacoco {
+        destinationFile = file("$buildDir/jacoco/test.exec")
+    }
+}
+
+test.finalizedBy jacocoTestReport
