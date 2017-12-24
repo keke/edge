@@ -67,12 +67,15 @@ public class VertxMain {
                 if (LOG.isInfoEnabled()) {
                     LOG.info("Vertx started successfully");
                 }
+                vertx.eventBus().publish("vertx.system", "started");
             } else {
                 if (LOG.isErrorEnabled()) {
                     LOG.error("Unable to start vertx : {}", c.result());
                 }
+                vertx.close();
             }
         });
+
     }
 
     private String getConfig(String configPath) throws IOException {

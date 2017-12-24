@@ -15,6 +15,7 @@ public class MonitoringStoreVerticle extends AbstractVerticle {
         if (LOG.isDebugEnabled()) {
             LOG.debug("To start MonitoringStore Verticle");
         }
+        super.start(startFuture);
         store = config().getJsonArray("store", new JsonArray());
         getVertx().eventBus().consumer("store.monitoring", h -> {
             if (LOG.isTraceEnabled()) {
@@ -24,6 +25,6 @@ public class MonitoringStoreVerticle extends AbstractVerticle {
                 h.reply(store);
             }
         });
-        super.start(startFuture);
+
     }
 }

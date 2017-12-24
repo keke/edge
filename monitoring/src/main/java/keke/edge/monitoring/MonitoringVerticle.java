@@ -23,21 +23,25 @@ public class MonitoringVerticle extends AbstractVerticle {
             LOG.trace("Starting Monitoring Verticle");
         }
 
-        getVertx().eventBus().send("store.monitoring", "load", r -> {
-            if (r.succeeded()) {
-                configData = (JsonArray) r.result().body();
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("Monitoring configuration loaded {}", configData);
-                }
-                doFirstScan();
-                startFuture.complete();
-            } else {
-                if (LOG.isErrorEnabled()) {
-                    LOG.error("Unable to load config", r.cause());
-                    startFuture.fail(r.cause());
-                }
+        super.start(startFuture);
+        getVertx().eventBus().consumer("vertx.system", h -> {
+            if (h.body().equals("started")) {
+                getVertx().eventBus().send("store.monitoring", "load", r -> {
+                    if (r.succeeded()) {
+                        configData = (JsonArray) r.result().body();
+                        if (LOG.isInfoEnabled()) {
+                            LOG.info("Monitoring configuration loaded {}", configData);
+                        }
+                        doFirstScan();
+                    } else {
+                        if (LOG.isErrorEnabled()) {
+                            LOG.error("Unable to load config", r.cause());
+                        }
+                    }
+                });
             }
         });
+
     }
 
     private void doFirstScan() {
@@ -64,7 +68,7 @@ public class MonitoringVerticle extends AbstractVerticle {
     }
 
     private void walkDir(String path) throws IOException {
-        WalkDir walkDir = new WalkDir();
+        WalkDir walkDir = new WalkDir(getVertx().eventBus());
         Files.walkFileTree(Paths.get(path), walkDir);
     }
 }

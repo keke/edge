@@ -7,8 +7,10 @@ dependencies {
     compile "io.vertx:vertx-web:$vertxVersion"
     compile "org.slf4j:slf4j-api:$slf4jVersion"
     compile "commons-io:commons-io:$commonsIoVersion"
+    compile "org.apache.tika:tika-core:$tikaVersion"
 
     //runtime dependencies
     runtime "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
+    runtime "org.apache.tika:tika-parsers:$tikaVersion"
 
 }
