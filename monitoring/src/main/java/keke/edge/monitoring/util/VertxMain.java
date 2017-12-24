@@ -1,10 +1,7 @@
 package keke.edge.monitoring.util;
 
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
-import io.vertx.core.json.Json;
+import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -12,8 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author keke
@@ -22,13 +20,15 @@ public class VertxMain {
     private static final Logger LOG = LoggerFactory.getLogger(VertxMain.class);
     private Vertx vertx;
     private VertxOptions options;
+    private JsonObject vertxConfig = new JsonObject();
 
     public VertxMain(String configFile) throws IOException {
         options = new VertxOptions();
         if (configFile != null) {
             String configStr = getConfig(configFile);
             if (configStr != null) {
-                options = new VertxOptions(new JsonObject(configStr));
+                vertxConfig = new JsonObject(configStr);
+                options = new VertxOptions(vertxConfig.getJsonObject("options", new JsonObject()));
             }
         } else {
             LOG.debug("Using default configuration");
@@ -49,7 +49,29 @@ public class VertxMain {
 
     private void start() {
         vertx = Vertx.vertx(options);
-//        vertx.
+        List<Future> futureList = new ArrayList<>();
+        vertxConfig.getJsonObject("verticles", new JsonObject()).forEach(e -> {
+            String key = e.getKey();
+            JsonObject cfg = (JsonObject) e.getValue();
+            String className = cfg.getString("class");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("To deploy {}-{}", key, className);
+            }
+            Future<String> future = Future.future();
+            futureList.add(future);
+            vertx.deployVerticle(className, new DeploymentOptions(cfg.getJsonObject("options", new JsonObject())), future.completer());
+        });
+        CompositeFuture.all(futureList).setHandler(c -> {
+            if (c.succeeded()) {
+                if (LOG.isInfoEnabled()) {
+                    LOG.info("Vertx started successfully");
+                }
+            } else {
+                if (LOG.isErrorEnabled()) {
+                    LOG.error("Unable to start vertx : {}", c.result());
+                }
+            }
+        });
     }
 
     private String getConfig(String configPath) throws IOException {

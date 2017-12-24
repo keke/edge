@@ -1,1 +1,8 @@
-{}
+{
+  "options": {},
+  "verticles": {
+    "monitoring": {
+      "class": "keke.edge.monitoring.MonitoringVerticle"
+    }
+  }
+}
