@@ -5,6 +5,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author keke
@@ -20,20 +22,34 @@ import java.util.List;
 public class VertxMain {
     private static final Logger LOG = LoggerFactory.getLogger(VertxMain.class);
     private Vertx vertx;
-    private VertxOptions options;
+    private VertxOptions options = new VertxOptions();
     private JsonObject vertxConfig = new JsonObject();
 
+    /**
+     * Build a default VertxMain
+     *
+     * @throws IOException
+     */
+    public VertxMain() throws IOException {
+        this("/vertx.json");
+    }
+
+    /**
+     * @param configFile
+     * @throws IOException
+     */
     public VertxMain(String configFile) throws IOException {
-        options = new VertxOptions();
-        if (configFile != null) {
-            String configStr = getConfig(configFile);
-            if (configStr != null) {
-                vertxConfig = new JsonObject(configStr);
-                options = new VertxOptions(vertxConfig.getJsonObject("options", new JsonObject()));
-            }
-        } else {
-            LOG.debug("Using default configuration");
+        if (StringUtils.isBlank(configFile)) {
+            throw new IllegalArgumentException("ConfigFile should not be blank");
         }
+        options = new VertxOptions();
+
+        String configStr = getConfig(configFile);
+        if (configStr != null) {
+            vertxConfig = new JsonObject(configStr);
+            options = new VertxOptions(vertxConfig.getJsonObject("options", new JsonObject()));
+        }
+
     }
 
     public static void main(String... args) {
@@ -46,6 +62,23 @@ public class VertxMain {
         } catch (IOException e) {
             LOG.error("Unable to start VertxMain", e);
         }
+    }
+
+    static String getConfig(String configPath) throws IOException {
+        Objects.requireNonNull(configPath);
+        //try file first
+        File file = new File(configPath);
+        if (file.exists() && file.isFile()) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Load config from file {}", file);
+            }
+            return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+        }
+        //try stream
+        if(LOG.isDebugEnabled()){
+            LOG.debug("URL {}", VertxMain.class.getResource(configPath));
+        }
+        return IOUtils.toString(VertxMain.class.getResourceAsStream(configPath), StandardCharsets.UTF_8);
     }
 
     private void start() {
@@ -76,18 +109,5 @@ public class VertxMain {
             }
         });
 
-    }
-
-    private String getConfig(String configPath) throws IOException {
-        //try file first
-        File file = new File(configPath);
-        if (file.exists() && file.isFile()) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Load config from file {}", file);
-            }
-            return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-        }
-        //try stream
-        return IOUtils.toString(VertxMain.class.getResourceAsStream(configPath), StandardCharsets.UTF_8);
     }
 }

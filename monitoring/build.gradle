@@ -18,6 +18,8 @@ dependencies {
     compile "org.slf4j:slf4j-api:$slf4jVersion"
     compile "commons-io:commons-io:$commonsIoVersion"
     compile "org.apache.tika:tika-core:$tikaVersion"
+    compile "org.apache.commons:commons-lang3:$commonsLangVersion"
+    // test dependencies
     testCompile "org.mockito:mockito-core:$mockitoVersion"
     testCompile "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
