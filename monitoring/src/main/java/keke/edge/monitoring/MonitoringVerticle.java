@@ -26,22 +26,26 @@ public class MonitoringVerticle extends AbstractVerticle {
         super.start(startFuture);
         getVertx().eventBus().consumer("vertx.system", h -> {
             if (h.body().equals("started")) {
-                getVertx().eventBus().send("store.monitoring", "load", r -> {
-                    if (r.succeeded()) {
-                        configData = (JsonArray) r.result().body();
-                        if (LOG.isInfoEnabled()) {
-                            LOG.info("Monitoring configuration loaded {}", configData);
-                        }
-                        doFirstScan();
-                    } else {
-                        if (LOG.isErrorEnabled()) {
-                            LOG.error("Unable to load config", r.cause());
-                        }
-                    }
-                });
+                loadStoreConfig();
             }
         });
 
+    }
+
+    private void loadStoreConfig() {
+        getVertx().eventBus().send("store.monitoring", "load", r -> {
+            if (r.succeeded()) {
+                configData = (JsonArray) r.result().body();
+                if (LOG.isInfoEnabled()) {
+                    LOG.info("Monitoring configuration loaded {}", configData);
+                }
+                doFirstScan();
+            } else {
+                if (LOG.isErrorEnabled()) {
+                    LOG.error("Unable to load config", r.cause());
+                }
+            }
+        });
     }
 
     private void doFirstScan() {

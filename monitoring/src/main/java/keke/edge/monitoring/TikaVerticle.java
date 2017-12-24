@@ -25,7 +25,6 @@ public class TikaVerticle extends AbstractVerticle {
     @Override
     public void init(Vertx vertx, Context context) {
         super.init(vertx, context);
-
         parser = new AutoDetectParser();
 
     }
@@ -57,8 +56,10 @@ public class TikaVerticle extends AbstractVerticle {
         Metadata metadata = new Metadata();
         try (InputStream is = Files.newInputStream(Paths.get(path))) {
             parser.parse(is, handler, metadata);
-            LOG.debug("Parse Metadata {}", metadata.toString());
-            LOG.debug("Result {}", handler.toString());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Parse Metadata {}", metadata.toString());
+                LOG.debug("Result {}", handler.toString());
+            }
         }
 
     }
