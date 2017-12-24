@@ -1,8 +1,19 @@
 {
   "options": {},
-  "verticles": {
-    "monitoring": {
+  "verticles": [
+    {
+      "class": "keke.edge.monitoring.MonitoringStoreVerticle",
+      "config": {
+        "store": [
+          {
+            "path": "/Users/keke/OneDrive - Philips"
+          }
+        ]
+      }
+    },
+    {
       "class": "keke.edge.monitoring.MonitoringVerticle"
     }
-  }
+  ]
+}
 }

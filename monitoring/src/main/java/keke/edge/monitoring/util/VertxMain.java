@@ -1,6 +1,7 @@
 package keke.edge.monitoring.util;
 
 import io.vertx.core.*;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -50,16 +51,16 @@ public class VertxMain {
     private void start() {
         vertx = Vertx.vertx(options);
         List<Future> futureList = new ArrayList<>();
-        vertxConfig.getJsonObject("verticles", new JsonObject()).forEach(e -> {
-            String key = e.getKey();
-            JsonObject cfg = (JsonObject) e.getValue();
-            String className = cfg.getString("class");
+        vertxConfig.getJsonArray("verticles", new JsonArray()).forEach(e -> {
+            JsonObject obj = (JsonObject) e;
+
+            String className = obj.getString("class");
             if (LOG.isDebugEnabled()) {
-                LOG.debug("To deploy {}-{}", key, className);
+                LOG.debug("To deploy-{}", className);
             }
             Future<String> future = Future.future();
             futureList.add(future);
-            vertx.deployVerticle(className, new DeploymentOptions(cfg.getJsonObject("options", new JsonObject())), future.completer());
+            vertx.deployVerticle(className, new DeploymentOptions(obj), future.completer());
         });
         CompositeFuture.all(futureList).setHandler(c -> {
             if (c.succeeded()) {
