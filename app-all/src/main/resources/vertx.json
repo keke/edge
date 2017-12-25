@@ -1,0 +1,23 @@
+{
+  "options": {},
+  "verticles": [
+    {
+      "class": "keke.edge.store.StoreVerticle",
+      "config": {
+        "store": "InMem",
+        "data": {
+          "config": {
+            "folders": [
+              {
+                "path": "/Users/keke/OneDrive - Philips"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "class": "keke.edge.monitoring.MonitoringVerticle"
+    }
+  ]
+}

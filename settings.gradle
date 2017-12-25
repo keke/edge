@@ -3,3 +3,4 @@ include 'monitoring'
 include 'util'
 include "store"
 include "extract"
+include "app-all"
