@@ -4,8 +4,10 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import keke.edge.store.Doc;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.Office;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.slf4j.Logger;
@@ -17,8 +19,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class TikaVerticle extends AbstractVerticle {
-    private static final Logger LOG = LoggerFactory.getLogger(TikaVerticle.class);
+public class ExtractVerticle extends AbstractVerticle {
+    private static final Logger LOG = LoggerFactory.getLogger(ExtractVerticle.class);
 
     private AutoDetectParser parser;
 
@@ -34,32 +36,33 @@ public class TikaVerticle extends AbstractVerticle {
         if (LOG.isDebugEnabled()) {
             LOG.debug("To start Tika Verticle");
         }
-        getVertx().eventBus().consumer("process.file", h -> {
-            String path = (String) h.body();
+        getVertx().eventBus().consumer("extract.all", h -> {
+            Doc doc = (Doc) h.body();
             if (LOG.isTraceEnabled()) {
-                LOG.trace("To process {}", path);
+                LOG.trace("To extract all {}", doc.getPath());
             }
             try {
-                processFile(path);
+                extractAll(doc);
             } catch (IOException | TikaException | SAXException e) {
                 if (LOG.isWarnEnabled()) {
-                    LOG.warn("Unable to process file {}", path, e);
+                    LOG.warn("Unable to process file {}", doc.getPath(), e);
                 }
             }
         });
         super.start(startFuture);
     }
 
-    private void processFile(String path) throws IOException, TikaException, SAXException {
+    private void extractAll(Doc doc) throws IOException, TikaException, SAXException {
 
         BodyContentHandler handler = new BodyContentHandler(-1);
         Metadata metadata = new Metadata();
-        try (InputStream is = Files.newInputStream(Paths.get(path))) {
+        try (InputStream is = Files.newInputStream(Paths.get(doc.getPath()))) {
             parser.parse(is, handler, metadata);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Parse Metadata {}", metadata.toString());
                 LOG.debug("Result {}", handler.toString());
             }
+
         }
 
     }

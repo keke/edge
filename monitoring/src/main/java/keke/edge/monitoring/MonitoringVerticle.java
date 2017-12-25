@@ -85,7 +85,7 @@ public class MonitoringVerticle extends AbstractVerticle {
         });
     }
 
-    private void checkWatcher(Long id) {
+    private void checkWatcher(@SuppressWarnings("not used") Long id) {
         watcher.check();
     }
 
@@ -100,6 +100,10 @@ public class MonitoringVerticle extends AbstractVerticle {
     }
 
     private void findDoc(Doc doc) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Found document {}", doc.getPath());
+        }
+        getVertx().eventBus().send("extract.all", doc);
     }
 
     @Override

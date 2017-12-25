@@ -18,6 +18,9 @@
     },
     {
       "class": "keke.edge.monitoring.MonitoringVerticle"
+    },
+    {
+      "class": "keke.edge.extract.ExtractVerticle"
     }
   ]
 }

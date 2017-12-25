@@ -7,9 +7,9 @@ buildscript {
     }
 }
 
-apply plugin: 'com.github.johnrengelman.plugin-shadow'
 apply plugin: 'java'
 apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 repositories {
     mavenLocal()
@@ -17,6 +17,7 @@ repositories {
 }
 
 mainClassName = 'keke.edge.util.VertxMain'
+
 shadowJar {
     classifier = 'fat'
     mergeServiceFiles {
