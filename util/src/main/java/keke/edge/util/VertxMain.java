@@ -1,4 +1,4 @@
-package keke.edge.monitoring.util;
+package keke.edge.util;
 
 import io.vertx.core.*;
 import io.vertx.core.json.JsonArray;

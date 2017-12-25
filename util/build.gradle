@@ -19,11 +19,9 @@ jacoco {
     applyTo junitPlatformTest
 }
 dependencies {
-    compile project(":util")
-    compile "io.vertx:vertx-web:$vertxVersion"
+    compile "io.vertx:vertx-core:$vertxVersion"
     compile "org.slf4j:slf4j-api:$slf4jVersion"
     compile "commons-io:commons-io:$commonsIoVersion"
-    compile "org.apache.tika:tika-core:$tikaVersion"
     compile "org.apache.commons:commons-lang3:$commonsLangVersion"
     // test dependencies
     testCompile "org.mockito:mockito-core:$mockitoVersion"
@@ -31,7 +29,6 @@ dependencies {
     testRuntime "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
     //runtime dependencies
     runtime "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
-    runtime "org.apache.tika:tika-parsers:$tikaVersion"
 
 }
 
