@@ -2,3 +2,4 @@ rootProject.name = 'keke.edge'
 include 'monitoring'
 include 'util'
 include "store"
+include "extract"

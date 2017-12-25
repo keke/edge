@@ -118,7 +118,7 @@ public class VertxMain {
                 vertx.eventBus().publish(ADDR_VERTX_SYSTEM, EVENT_STARTED);
             } else {
                 if (LOG.isErrorEnabled()) {
-                    LOG.error("Unable to start vertx : {}", c.result());
+                    LOG.error("Unable to start vertx : {}", c.result(), c.cause());
                 }
                 vertx.close();
             }

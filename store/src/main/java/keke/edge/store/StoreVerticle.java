@@ -18,13 +18,16 @@ public class StoreVerticle extends AbstractVerticle {
         if (LOG.isDebugEnabled()) {
             LOG.debug("To initiate Store Verticle with config: {}", context.config());
         }
-        vertx.eventBus().registerDefaultCodec(Config.class, new ConfigMessageCodec());
+        vertx.eventBus().registerDefaultCodec(Config.class, new ConfigMessageCodec()).registerDefaultCodec(Doc.class, new DocMessageCodec());
         super.init(vertx, context);
 
     }
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
+        if(LOG.isDebugEnabled()){
+            LOG.debug("To start Store verticle");
+        }
         String storeType = context.config().getString("store");
         if ("InMem".equals(storeType)) {
             store = new InMemoryStore(context.config().getJsonObject("data"));

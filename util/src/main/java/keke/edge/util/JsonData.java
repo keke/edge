@@ -4,7 +4,7 @@ import io.vertx.core.json.JsonObject;
 
 import java.util.Objects;
 
-public abstract class JsonData<T extends JsonData> {
+public abstract class JsonData {
     private JsonObject jsonObject;
 
     public JsonData() {
@@ -21,6 +21,7 @@ public abstract class JsonData<T extends JsonData> {
     }
 
     public void setJsonObject(JsonObject jsonObject) {
+        Objects.requireNonNull(jsonObject);
         this.jsonObject = jsonObject;
     }
 
