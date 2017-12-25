@@ -1,13 +1,21 @@
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath "org.junit.platform:junit-platform-gradle-plugin:$junitPlatformVersion"
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.1.1"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0"
     }
 }
+plugins {
+    id "com.jfrog.bintray" version "1.8.0"
+}
+
 apply plugin: 'java'
 apply plugin: "jacoco"
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'org.junit.platform.gradle.plugin'
 
 sourceCompatibility = 9
@@ -17,6 +25,15 @@ version = '0.0.1-SNAPSHOT'
 jacoco {
     toolVersion = "0.7.9"
     applyTo junitPlatformTest
+}
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
 }
 dependencies {
     compile "io.vertx:vertx-core:$vertxVersion"
@@ -53,3 +70,38 @@ jacocoTestReport {
 }
 
 test.finalizedBy jacocoTestReport
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+bintray {
+    user = "keke"
+    key = System.getenv("bintrayKey")
+    publications = ['mavenJava']
+    publish = true
+    pkg {
+        repo = 'keke-maven'
+        name = project.name
+        licenses = ['Apache-2.0']
+        publicDownloadNumbers = true
+
+        vcsUrl = 'https://github.com/keke/edge.git'
+        websiteUrl = 'https://github.com/keke/edge'
+        issueTrackerUrl = 'https://github.com/keke/vertx-kafka-relay/issues'
+        githubRepo = "keke/edge"
+        version {
+            name = "0.0.1"
+            released = new Date()
+        }
+    }
+}
