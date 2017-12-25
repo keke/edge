@@ -20,6 +20,15 @@ import java.util.Objects;
  * @author keke
  */
 public class VertxMain {
+    /**
+     * Address: Vertx.System
+     */
+    public static final String ADDR_VERTX_SYSTEM = "vertx.system";
+    /**
+     * Event: Vertx.System started
+     */
+    public static final String EVENT_STARTED = "started";
+
     private static final Logger LOG = LoggerFactory.getLogger(VertxMain.class);
     private Vertx vertx;
     private VertxOptions options = new VertxOptions();
@@ -28,30 +37,33 @@ public class VertxMain {
     /**
      * Build a default VertxMain
      *
-     * @throws IOException
+     * @throws IOException error when reading configuration file
      */
     public VertxMain() throws IOException {
         this("/vertx.json");
     }
 
     /**
-     * @param configFile
-     * @throws IOException
+     * @param configFile configuration file for the Vertx Node, should not be <code>null</code>
+     * @throws IOException error when reading configuration file
      */
     public VertxMain(String configFile) throws IOException {
         if (StringUtils.isBlank(configFile)) {
             throw new IllegalArgumentException("ConfigFile should not be blank");
         }
-        options = new VertxOptions();
-
         String configStr = getConfig(configFile);
         if (configStr != null) {
             vertxConfig = new JsonObject(configStr);
             options = new VertxOptions(vertxConfig.getJsonObject("options", new JsonObject()));
         }
-
+        vertx = Vertx.vertx(options);
     }
 
+    /**
+     * Main for the Vertx.System
+     *
+     * @param args
+     */
     public static void main(String... args) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("Starting VertxMain...");
@@ -74,22 +86,25 @@ public class VertxMain {
             }
             return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
         }
-        //try stream
-        if(LOG.isDebugEnabled()){
+        //try class path
+        if (LOG.isDebugEnabled()) {
             LOG.debug("URL {}", VertxMain.class.getResource(configPath));
         }
         return IOUtils.toString(VertxMain.class.getResourceAsStream(configPath), StandardCharsets.UTF_8);
     }
 
-    private void start() {
-        vertx = Vertx.vertx(options);
+    @SuppressWarnings("used for unit test")
+    void setVertx(Vertx vertx) {
+        this.vertx = vertx;
+    }
+
+    void start() {
         List<Future> futureList = new ArrayList<>();
         vertxConfig.getJsonArray("verticles", new JsonArray()).forEach(e -> {
             JsonObject obj = (JsonObject) e;
-
             String className = obj.getString("class");
             if (LOG.isDebugEnabled()) {
-                LOG.debug("To deploy-{}", className);
+                LOG.debug("To deploy verticle: {}", className);
             }
             Future<String> future = Future.future();
             futureList.add(future);
@@ -100,7 +115,7 @@ public class VertxMain {
                 if (LOG.isInfoEnabled()) {
                     LOG.info("Vertx started successfully");
                 }
-                vertx.eventBus().publish("vertx.system", "started");
+                vertx.eventBus().publish(ADDR_VERTX_SYSTEM, EVENT_STARTED);
             } else {
                 if (LOG.isErrorEnabled()) {
                     LOG.error("Unable to start vertx : {}", c.result());
@@ -108,6 +123,5 @@ public class VertxMain {
                 vertx.close();
             }
         });
-
     }
 }

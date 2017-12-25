@@ -97,7 +97,7 @@ bintray {
         issueTrackerUrl = 'https://github.com/keke/vertx-kafka-relay/issues'
         githubRepo = "keke/edge"
         version {
-            name = "0.0.1"
+            name = "0.0.1-SNAPSHOT"
             released = new Date()
         }
     }
