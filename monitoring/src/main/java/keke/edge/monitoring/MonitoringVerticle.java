@@ -5,6 +5,7 @@ import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import keke.edge.monitoring.util.WalkDir;
+import keke.edge.store.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,26 +37,21 @@ public class MonitoringVerticle extends AbstractVerticle {
     }
 
     private void loadStoreConfig() {
-        getVertx().eventBus().send("store.monitoring", "load", r -> {
+        getVertx().eventBus().send("store.config.load", null, r -> {
             if (r.succeeded()) {
-                configData = (JsonArray) r.result().body();
+                Config config = (Config) r.result().body();
                 if (LOG.isInfoEnabled()) {
-                    LOG.info("Monitoring configuration loaded {}", configData);
+                    LOG.info("Monitoring configuration loaded {}", config.getJsonObject());
                 }
-                doFirstScan();
-            } else {
-                if (LOG.isErrorEnabled()) {
-                    LOG.error("Unable to load config", r.cause());
-                }
+                doFirstScan(config);
             }
         });
     }
 
-    private void doFirstScan() {
+    private void doFirstScan(Config config) {
         getVertx().executeBlocking(f -> {
-            configData.forEach(e -> {
-                JsonObject each = (JsonObject) e;
-                String path = each.getString("path");
+            config.getFolders().forEach(e -> {
+                String path = e.getPath();
                 try {
                     walkDir(path);
                 } catch (IOException e1) {

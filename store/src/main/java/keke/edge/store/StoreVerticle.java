@@ -5,10 +5,9 @@ import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.InvocationTargetException;
 
 public class StoreVerticle extends AbstractVerticle {
     private static final Logger LOG = LoggerFactory.getLogger(StoreVerticle.class);
@@ -26,14 +25,17 @@ public class StoreVerticle extends AbstractVerticle {
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
-        String storeClass = context.config().getString("store");
-        try {
-            store = (Store) Class.forName(storeClass).getConstructor(null).newInstance();
-            prepareEvents();
-            super.start(startFuture);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | ClassNotFoundException e) {
-            startFuture.fail(e);
+        String storeType = context.config().getString("store");
+        if ("InMem".equals(storeType)) {
+            store = new InMemoryStore(context.config().getJsonObject("data"));
+        } else {
+            if (LOG.isWarnEnabled()) {
+                LOG.warn("Unknown store type: [{}]. Using InMemory store", storeType);
+                store = new InMemoryStore(new JsonObject());
+            }
         }
+        prepareEvents();
+        super.start(startFuture);
     }
 
     private void prepareEvents() {

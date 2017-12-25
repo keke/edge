@@ -20,6 +20,7 @@ jacoco {
 }
 dependencies {
     compile project(":util")
+    compile project(":store")
     compile "io.vertx:vertx-web:$vertxVersion"
     compile "org.slf4j:slf4j-api:$slf4jVersion"
     compile "commons-io:commons-io:$commonsIoVersion"
