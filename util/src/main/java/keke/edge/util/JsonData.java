@@ -21,6 +21,7 @@ public abstract class JsonData {
     }
 
     public void setJsonObject(JsonObject jsonObject) {
+        Objects.requireNonNull(jsonObject);
         this.jsonObject = jsonObject;
     }
 
