@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+/**
+ * @author keke
+ */
 public class MonitoringVerticle extends AbstractVerticle {
     private static final Logger LOG = LoggerFactory.getLogger(MonitoringVerticle.class);
     private JsonArray configData;
