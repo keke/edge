@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author keke
  */
-public class Config extends JsonData<Config> {
+public class Config extends JsonData {
 
     public Config() {
         this(new JsonObject());

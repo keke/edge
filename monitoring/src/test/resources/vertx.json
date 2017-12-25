@@ -17,13 +17,7 @@
       }
     },
     {
-      "class": "keke.edge.monitoring.MonitoringStoreVerticle"
-    },
-    {
       "class": "keke.edge.monitoring.MonitoringVerticle"
-    },
-    {
-      "class": "keke.edge.monitoring.TikaVerticle"
     }
   ]
 }

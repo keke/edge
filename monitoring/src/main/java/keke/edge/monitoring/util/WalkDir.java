@@ -1,6 +1,6 @@
 package keke.edge.monitoring.util;
 
-import io.vertx.core.eventbus.EventBus;
+import keke.edge.store.Doc;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,14 +15,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class WalkDir extends SimpleFileVisitor<Path> {
+public abstract class WalkDir extends SimpleFileVisitor<Path> {
     private static final Logger LOG = LoggerFactory.getLogger(WalkDir.class);
-    private static final Set<String> EXT_SET = new HashSet<>(Arrays.asList("pptx", "pdf", "ppt", "doc", "docx"));
-    private EventBus eventBus;
+    private static final Set<String> EXT_SET = new HashSet<>(Arrays.asList("pptx", "pdf", "ppt", "doc", "docx", "eml", "xlsx", "xls"));
 
-    public WalkDir(EventBus eventBus) {
-        this.eventBus = eventBus;
-    }
 
     @Override
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
@@ -39,7 +35,7 @@ public class WalkDir extends SimpleFileVisitor<Path> {
             if (LOG.isInfoEnabled()) {
                 LOG.info("Visiting file {}", file);
             }
-            eventBus.publish("process.file", file.toString());
+            findDoc(new Doc(file.toAbsolutePath().toString()));
         } else {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Skip file {}", file);
@@ -51,4 +47,6 @@ public class WalkDir extends SimpleFileVisitor<Path> {
     private boolean isAcceptable(String name) {
         return EXT_SET.contains(FilenameUtils.getExtension(name).toLowerCase());
     }
+
+    abstract public void findDoc(Doc doc);
 }
